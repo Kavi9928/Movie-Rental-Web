@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Rental Home</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<style>
+/* Section Heading Styling */
+.why-choose-us-section h2 {
+    font-size: 2.5em;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #fff; /* White text for heading */
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Rest of the styles as from before (boxes and frosted glass effects) */
+.why-choose-us-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 40px;
+}
+
+.why-choose-us-section .box {
+    flex: 1;
+    min-width: 300px;
+    max-width: 40%;
+    height: 250px;
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Background gradients for each box */
+.why-choose-us-section .box:nth-child(2) {
+    background: linear-gradient(145deg, #ff9a9e, #fad0c4);
+}
+
+.why-choose-us-section .box:nth-child(3) {
+    background: linear-gradient(145deg, #a1c4fd, #c2e9fb);
+}
+
+.why-choose-us-section .box:nth-child(4) {
+    background: linear-gradient(145deg, #ffecd2, #fcb69f);
+}
+
+/* Frosted glass content */
+.why-choose-us-section .box-content {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.2);
+}
+
+.why-choose-us-section .box-content h3 {
+    font-size: 1.8em;
+    color: #fff;
+}
+
+.why-choose-us-section .box-content p {
+    font-size: 1.2em;
+    color: #020101;
+    opacity: 0.85;
+}
+
+/* Hover effects */
+.why-choose-us-section .box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+
+.why-choose-us-section .box-content:hover {
+    backdrop-filter: blur(15px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .why-choose-us-section {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .why-choose-us-section .box {
+        width: 90%;
+        max-width: none;
+        margin-bottom: 20px;
+    }
+}
+
+        /* Footer Styles */
+        footer.site-footer {
+            background-color: #222;
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            width: 100%;
+            position: relative;
+            bottom: 0;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+
+        .footer-logo img {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+
+        .footer-columns {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .footer-column {
+            flex: 1;
+            margin: 20px;
+        }
+
+        .footer-column h4 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #ffaa00;
+        }
+
+        .footer-column ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .footer-column ul li a:hover {
+            color: #ffaa00;
+        }
+
+        /* Social Icons */
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .social-icons li {
+            display: inline-block;
+        }
+
+        .social-icons li a {
+            color: white;
+            font-size: 20px;
+        }
+
+        .footer-bottom {
+            margin-top: 20px;
+            padding: 10px;
+            border-top: 1px solid #444;
+        }
+
+        .footer-bottom p {
+            color: white;
+            font-size: 14px;
+        }
+
+        .footer-bottom a {
+            color: #ffaa00;
+            text-decoration: none;
+        }
+
+        .footer-bottom a:hover {
+            text-decoration: underline;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .footer-container {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .footer-columns {
+                flex-direction: column;
+            }
+
+            .footer-column {
+                margin: 10px 0;
+            }
+        }
+
+
+        .topic-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .topic {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .topic:hover {
+            background-color: #45a049;
+        }
+   
+
+</style>
+
+
+
+    <!-- Header Section -->
+    <header>
+        <div class="header-container">
+            <!-- Logo Section -->
+            <div class="logo">
+                <img src="logo.png" alt="Logo">
+            </div>
+
+            <!-- Search Bar Section -->
+            <div class="search-bar">
+                <input type="text" placeholder="Find Movies">
+            </div>
+
+            <!-- Navigation Links -->
+           <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="login.php">Movies</a>
+    <a href="trending.html">Trending</a>
+</nav>
+
+
+<!-- Call to Action Button -->
+<a href="login.php" class="cta-btn">Sign In</a>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Welcome to Movie Hub</h1>
+        <p>Stream or rent your favorite movies instantly.</p>
+        <a href="register.php" class="hero-btn">Browse Movies</a>
+
+        <!-- Transparent Squares with Topics -->
+        <div class="topic-container">
+            <button class="topic" onclick="window.location.href='login.php'">Action</button>
+            <button class="topic" onclick="window.location.href='login.php'">Drama</button>
+            <button class="topic" onclick="window.location.href='login.php'">Comedy</button>
+            <button class="topic" onclick="window.location.href='login.php'">Horror</button>
+        </div>
+    </section>
+
+<!-- Why Choose Us Section -->
+<section class="why-choose-us-section">
+    <h2>Why Choose Us?</h2>
+    <div class="box">
+        <div class="box-content">
+            <h3>Wide Selection</h3>
+            <p>Choose from a vast collection of movies across different genres.</p>
+        </div>
+    </div>
+    <div class="box">
+        <div class="box-content">
+            <h3>Easy Renting</h3>
+            <p>Rent movies in just a few clicks and enjoy them instantly.</p>
+        </div>
+    </div>
+    <div class="box">
+        <div class="box-content">
+            <h3>User-Friendly Interface</h3>
+            <p>Our platform is designed for an easy and enjoyable experience.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer Section -->
+<footer class="site-footer">
+    <div class="footer-container">
+        
+        <div class="footer-columns">
+            <div class="footer-column">
+                <h4>About Movie Hub</h4>
+                <ul>
+                    <li><a href="#">Company Info</a></li>
+                    <li><a href="#">Our Team</a></li>
+                    <li><a href="#">Careers</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Help & Support</h4>
+                <ul>
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Live Chat</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="social-icons">
+        <ul>
+            <li><a href="#"><i class="fab fa-facebook"></i></a></li>
+            <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+            <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+        </ul>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2024 Movie Hub. All rights reserved. <a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a></p>
+    </div>
+</footer>
+
+</body>
+</html>

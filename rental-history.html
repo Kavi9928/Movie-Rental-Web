@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental History</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f4f8, #cce0ff); /* Soft light blue gradient */
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #0066cc; /* Deep blue */
+            padding: 10px 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            color: white;
+        }
+        button.home-btn {
+            background-color: #0099cc; /* Soft blue */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button.home-btn:hover {
+            background-color: #0077aa; /* Darker blue */
+        }
+        .rental-container {
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: white; /* Simple white container */
+            width: 90%;
+            max-width: 700px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc; /* Light gray borders */
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #e0f7fa; /* Soft aqua for table headers */
+            color: #333;
+        }
+        td {
+            background-color: #f9f9f9; /* Light gray for table rows */
+        }
+        button.delete-btn {
+            background-color: #e57373; /* Soft red for delete button */
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button.delete-btn:hover {
+            background-color: #d32f2f; /* Darker red */
+        }
+        h2 {
+            margin-top: 40px;
+            color: #0066cc; /* Deep blue */
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Home Button -->
+    <header>
+        <h1>Rental History</h1>
+        <button class="home-btn" onclick="window.location.href='dashboard.php'">Home</button>
+    </header>
+
+    <h2>Your Rental History</h2>
+    <div class="rental-container" id="rental-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Renter</th>
+                    <th>Rented At</th>
+                    <th>Returned At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="rental-history-body"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const rentalHistoryBody = document.getElementById('rental-history-body');
+
+        fetch('rentals.xml')
+            .then(response => response.text())
+            .then(data => {
+                let parser = new DOMParser();
+                let xmlDoc = parser.parseFromString(data, "application/xml");
+                let rentals = xmlDoc.getElementsByTagName("rental");
+
+                if (rentals.length === 0) {
+                    rentalHistoryBody.innerHTML = '<tr><td colspan="5">No rental history found.</td></tr>';
+                } else {
+                    for (let i = 0; i < rentals.length; i++) {
+                        const rental = rentals[i];
+                        const title = rental.getElementsByTagName("title")[0].textContent;
+                        const renter = rental.getElementsByTagName("renter")[0].textContent;
+                        const rentalDate = rental.getElementsByTagName("rentalDate")[0].textContent;
+                        const returnDate = rental.getElementsByTagName("returnDate")[0].textContent || 'Not Returned';
+
+                        rentalHistoryBody.innerHTML += `
+                            <tr>
+                                <td>${title}</td>
+                                <td>${renter}</td>
+                                <td>${new Date(rentalDate).toLocaleString()}</td>
+                                <td>${returnDate !== 'Not Returned' ? new Date(returnDate).toLocaleString() : returnDate}</td>
+                                <td><button class="delete-btn" onclick="deleteRental(${i})">Delete</button></td>
+                            </tr>
+                        `;
+                    }
+                }
+            })
+            .catch(error => {
+                console.log("Error loading rental history:", error);
+            });
+
+        function deleteRental(index) {
+            // Fetch the XML file
+            fetch('rentals.xml')
+                .then(response => response.text())
+                .then(data => {
+                    let parser = new DOMParser();
+                    let xmlDoc = parser.parseFromString(data, "application/xml");
+                    let rentals = xmlDoc.getElementsByTagName("rental");
+
+                    // Remove the rental from the XML
+                    if (rentals[index]) {
+                        rentals[index].parentNode.removeChild(rentals[index]);
+
+                        // Serialize the updated XML
+                        const updatedXML = new XMLSerializer().serializeToString(xmlDoc);
+
+                        // Send the updated XML back to the server
+                        fetch('update_rentals.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/xml',
+                            },
+                            body: updatedXML,
+                        })
+                        .then(response => response.text())
+                        .then(msg => {
+                            alert('Rental deleted successfully!');
+                            window.location.reload(); // Reload the page to reflect the changes
+                        })
+                        .catch(error => {
+                            alert('Error deleting rental: ' + error);
+                        });
+                    } else {
+                        alert('Rental not found.');
+                    }
+                })
+                .catch(error => {
+                    console.log("Error deleting rental:", error);
+                });
+        }
+    </script>
+</body>
+</html>

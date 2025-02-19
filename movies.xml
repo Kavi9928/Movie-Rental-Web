@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<movies>
+ 
+<movie><title>DADA</title><genre>Family</genre><releaseYear>2023</releaseYear><rating>8.8</rating><available>false</available></movie><movie><title>Good Night</title><genre>Mystery</genre><releaseYear>2023</releaseYear><rating>7.8</rating><available>false</available></movie><movie><title>Oh My Kadavule</title><genre>Romance</genre><releaseYear>2020</releaseYear><rating>4.8</rating><available>true</available></movie><movie><title>MIGRATION</title><genre>Kids</genre><releaseYear>2023</releaseYear><rating>8.2</rating><available>true</available></movie><movie><title>Eleesa</title><genre>horrors' </genre><releaseYear>2020</releaseYear><rating>6.9</rating><available>true</available></movie></movies>

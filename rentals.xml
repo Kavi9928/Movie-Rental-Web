@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rentals>
+ 
+    <!-- More rentals -->
+
+                   
+                
+                 
+                
+                    
+                
+                
+                    
+                
+                    <rental>
+                        <title>DADA</title>
+                        <renter>Elza</renter>
+                        <rentalDate>2024-10-21</rentalDate>
+                        <returnDate>2024-10-21</returnDate>
+                    </rental>
+                
+                    <rental>
+                        <title>Oh My Kadavule</title>
+                        <renter>samali</renter>
+                        <rentalDate>2024-10-22</rentalDate>
+                        <returnDate>2024-10-22</returnDate>
+                    </rental>
+                
+                    <rental>
+                        <title>DADA</title>
+                        <renter>amelia</renter>
+                        <rentalDate>2024-10-22</rentalDate>
+                        <returnDate>2024-10-22</returnDate>
+                    </rental>
+                
+                    <rental>
+                        <title>DADA</title>
+                        <renter>eliza</renter>
+                        <rentalDate>2024-10-22</rentalDate>
+                        <returnDate/>
+                    </rental>
+                
+                    <rental>
+                        <title>Good Night</title>
+                        <renter>kavindi</renter>
+                        <rentalDate>2024-10-22</rentalDate>
+                        <returnDate/>
+                    </rental>
+                </rentals>

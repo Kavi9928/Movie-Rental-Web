@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Movies</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f39c12, #8e44ad); /* More colorful background */
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            color: #ffffff;
+        }
+
+        h2 {
+            color: #ffffff;
+            font-size: 2.5em;
+            margin-top: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        #search-input {
+            margin: 20px;
+            padding: 15px;
+            width: 350px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #333;
+        }
+
+        .movie-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            width: 90%;
+            max-width: 1200px;
+            margin: 40px 0;
+        }
+
+        .movie-card {
+            background: linear-gradient(135deg, #6dd5ed, #2193b0); /* Gradient background */
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s, box-shadow 0.3s;
+            color: #ffffff;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .movie-card h3 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .movie-card p {
+            font-size: 1.2em;
+        }
+
+        .rent-btn {
+            background-color: #ff5733;
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin-top: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .rent-btn:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <h2>Browse Movies</h2>
+    
+    <input type="text" id="search-input" placeholder="Search by title, genre, or year" />
+    <div class="movie-container" id="movie-container"></div>
+
+    <script>
+        let movies = []; // Array to hold movie data
+
+        // Function to load and display movies from XML
+        function loadMovies() {
+            fetch('movies.xml')
+                .then(response => response.text())
+                .then(data => {
+                    let parser = new DOMParser();
+                    let xmlDoc = parser.parseFromString(data, "application/xml");
+                    let movieElements = xmlDoc.getElementsByTagName("movie");
+                    let movieContainer = document.getElementById('movie-container');
+
+                    for (let i = 0; i < movieElements.length; i++) {
+                        let title = movieElements[i].getElementsByTagName("title")[0].textContent;
+                        let genre = movieElements[i].getElementsByTagName("genre")[0].textContent;
+                        let releaseYear = movieElements[i].getElementsByTagName("releaseYear")[0].textContent;
+                        let rating = movieElements[i].getElementsByTagName("rating")[0].textContent;
+                        let available = movieElements[i].getElementsByTagName("available")[0].textContent;
+
+                        let movie = {
+                            title,
+                            genre,
+                            releaseYear,
+                            rating,
+                            available: available === 'true',
+                        };
+
+                        movies.push(movie);
+
+                        let movieCard = document.createElement('div');
+                        movieCard.classList.add('movie-card');
+
+                        movieCard.innerHTML = `
+                            <h3>${title}</h3>
+                            <p><strong>Genre:</strong> ${genre}</p>
+                            <p><strong>Release Year:</strong> ${releaseYear}</p>
+                            <p><strong>Rating:</strong> ${rating}</p>
+                            <p><strong>Available:</strong> ${available === 'true' ? 'Yes' : 'No'}</p>
+                            <button class="rent-btn" onclick="location.href='rent.html?title=${encodeURIComponent(title)}'">Rent Now</button>
+                        `;
+
+                        movieContainer.appendChild(movieCard);
+                    }
+                })
+                .catch(error => {
+                    console.log("Error loading the XML data:", error);
+                });
+        }
+
+        // Function to filter movies based on the search input
+        function filterMovies() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const movieContainer = document.getElementById('movie-container');
+            movieContainer.innerHTML = '';
+
+            const filteredMovies = movies.filter(movie => {
+                return (
+                    movie.title.toLowerCase().includes(searchInput) ||
+                    movie.genre.toLowerCase().includes(searchInput) ||
+                    movie.releaseYear.includes(searchInput)
+                );
+            });
+
+            filteredMovies.forEach(movie => {
+                const movieCard = document.createElement('div');
+                movieCard.classList.add('movie-card');
+
+                movieCard.innerHTML = `
+                    <h3>${movie.title}</h3>
+                    <p><strong>Genre:</strong> ${movie.genre}</p>
+                    <p><strong>Release Year:</strong> ${movie.releaseYear}</p>
+                    <p><strong>Rating:</strong> ${movie.rating}</p>
+                    <p><strong>Available:</strong> ${movie.available ? 'Yes' : 'No'}</p>
+                    <button class="rent-btn" onclick="location.href='rent.html?title=${encodeURIComponent(movie.title)}'">Rent Now</button>
+                `;
+
+                movieContainer.appendChild(movieCard);
+            });
+
+            if (filteredMovies.length === 0) {
+                movieContainer.innerHTML = '<p>No movies found.</p>';
+            }
+        }
+
+        // Call the function to load movies when the page loads
+        window.onload = loadMovies;
+
+        // Set up the search input event listener
+        document.getElementById('search-input').addEventListener('input', filterMovies);
+    </script>
+</body>
+</html>

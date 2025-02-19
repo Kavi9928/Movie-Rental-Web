@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Movie</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #2d1c11, #3e4b4f);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            color: white;
+        }
+        h2 {
+            margin-top: 0;
+            font-size: 2.2rem;
+            text-align: center;
+            color: #cb2a11;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: none;
+            outline: none;
+            margin: 20px 0;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #333;
+            text-align: center;
+        }
+        .return-btn {
+            background-color: #cb2a11;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .return-btn:hover {
+            background-color: #a8220d;
+            transform: translateY(-2px);
+        }
+        .return-btn:active {
+            transform: translateY(0);
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 80%;
+            max-width: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Return Movie</h2>
+        <input type="text" id="title" placeholder="Enter Movie Title" />
+        <button class="return-btn" onclick="returnMovie()">Return Movie</button>
+    </div>
+
+    <script>
+        function returnMovie() {
+            const title = document.getElementById('title').value;
+            const returnDate = new Date().toISOString().split('T')[0];
+
+            // Load current rentals
+            fetch('rentals.xml')
+                .then(response => response.text())
+                .then(data => {
+                    let parser = new DOMParser();
+                    let xmlDoc = parser.parseFromString(data, "application/xml");
+                    let rentals = xmlDoc.getElementsByTagName("rental");
+                    let rentalFound = false;
+
+                    // Loop through rentals to find the matching title
+                    for (let rental of rentals) {
+                        if (rental.getElementsByTagName("title")[0].textContent === title && !rental.getElementsByTagName("returnDate")[0].textContent) {
+                            // Update return date
+                            rental.getElementsByTagName("returnDate")[0].textContent = returnDate;
+                            rentalFound = true;
+                            break;
+                        }
+                    }
+
+                    if (rentalFound) {
+                        // Serialize the updated XML
+                        const updatedXML = new XMLSerializer().serializeToString(xmlDoc);
+
+                        // Update the rentals XML file on the server
+                        fetch('update_rentals.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/xml',
+                            },
+                            body: updatedXML,
+                        })
+                        .then(response => response.text())
+                        .then(msg => {
+                            alert('Movie returned successfully!');
+                            window.location.href = 'rental-history.html'; // Redirect to rental history page
+                        })
+                        .catch(error => {
+                            alert('Error returning movie: ' + error);
+                        });
+                    } else {
+                        alert('Rental not found or already returned.');
+                    }
+                })
+                .catch(error => {
+                    console.log("Error loading rentals data:", error);
+                });
+        }
+    </script>
+</body>
+</html>

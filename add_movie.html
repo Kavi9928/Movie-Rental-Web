@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Movies</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #2d1c11, #616562);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            color: white;
+            margin-top: 20px;
+        }
+
+        #search-input {
+            margin: 20px;
+            padding: 10px;
+            width: 300px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .movie-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            width: 90%;
+            max-width: 1200px;
+            margin: 40px 0;
+        }
+
+        .movie-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .rent-btn {
+            background-color: #cb2a11;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-movie-form {
+            margin: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: left;
+        }
+
+        .add-movie-form input, .add-movie-form button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .add-movie-form button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Browse Movies</h2>
+    
+    <input type="text" id="search-input" placeholder="Search by title, genre, or year" />
+    <div class="movie-container" id="movie-container"></div>
+
+    <!-- Add Movie Section -->
+    <div class="add-movie-form">
+        <h3>Add a New Movie</h3>
+        <input type="text" id="title" placeholder="Title" required />
+        <input type="text" id="genre" placeholder="Genre" required />
+        <input type="number" id="releaseYear" placeholder="Release Year" required />
+        <input type="number" id="rating" placeholder="Rating" required min="0" max="10" step="0.1" />
+        <button id="add-movie-btn">Add Movie</button>
+    </div>
+
+    <script>
+        let movies = []; // Array to hold movie data
+
+        // Function to load and display movies from XML
+        function loadMovies() {
+            fetch('movies.xml')
+                .then(response => response.text())
+                .then(data => {
+                    let parser = new DOMParser();
+                    let xmlDoc = parser.parseFromString(data, "application/xml");
+                    let movieElements = xmlDoc.getElementsByTagName("movie");
+                    let movieContainer = document.getElementById('movie-container');
+
+                    for (let i = 0; i < movieElements.length; i++) {
+                        let title = movieElements[i].getElementsByTagName("title")[0].textContent;
+                        let genre = movieElements[i].getElementsByTagName("genre")[0].textContent;
+                        let releaseYear = movieElements[i].getElementsByTagName("releaseYear")[0].textContent;
+                        let rating = movieElements[i].getElementsByTagName("rating")[0].textContent;
+                        let available = movieElements[i].getElementsByTagName("available")[0].textContent;
+
+                        let movie = {
+                            title,
+                            genre,
+                            releaseYear,
+                            rating,
+                            available: available === 'true',
+                        };
+
+                        movies.push(movie);
+
+                        let movieCard = document.createElement('div');
+                        movieCard.classList.add('movie-card');
+
+                        movieCard.innerHTML = `
+                            <h3>${title}</h3>
+                            <p><strong>Genre:</strong> ${genre}</p>
+                            <p><strong>Release Year:</strong> ${releaseYear}</p>
+                            <p><strong>Rating:</strong> ${rating}</p>
+                            <p><strong>Available:</strong> ${available === 'true' ? 'Yes' : 'No'}</p>
+                            <button class="rent-btn" onclick="location.href='rent.html?title=${encodeURIComponent(title)}'">Rent Now</button>
+                        `;
+
+                        movieContainer.appendChild(movieCard);
+                    }
+                })
+                .catch(error => {
+                    console.log("Error loading the XML data:", error);
+                });
+        }
+
+        // Function to filter movies based on the search input
+        function filterMovies() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const movieContainer = document.getElementById('movie-container');
+            movieContainer.innerHTML = '';
+
+            const filteredMovies = movies.filter(movie => {
+                return (
+                    movie.title.toLowerCase().includes(searchInput) ||
+                    movie.genre.toLowerCase().includes(searchInput) ||
+                    movie.releaseYear.includes(searchInput)
+                );
+            });
+
+            filteredMovies.forEach(movie => {
+                const movieCard = document.createElement('div');
+                movieCard.classList.add('movie-card');
+
+                movieCard.innerHTML = `
+                    <h3>${movie.title}</h3>
+                    <p><strong>Genre:</strong> ${movie.genre}</p>
+                    <p><strong>Release Year:</strong> ${movie.releaseYear}</p>
+                    <p><strong>Rating:</strong> ${movie.rating}</p>
+                    <p><strong>Available:</strong> ${movie.available ? 'Yes' : 'No'}</p>
+                    <button class="rent-btn" onclick="location.href='rent.html?title=${encodeURIComponent(movie.title)}'">Rent Now</button>
+                `;
+
+                movieContainer.appendChild(movieCard);
+            });
+
+            if (filteredMovies.length === 0) {
+                movieContainer.innerHTML = '<p>No movies found.</p>';
+            }
+        }
+
+        // Function to add a new movie
+        function addMovie() {
+            const title = document.getElementById('title').value;
+            const genre = document.getElementById('genre').value;
+            const releaseYear = document.getElementById('releaseYear').value;
+            const rating = document.getElementById('rating').value;
+
+            // Check for empty fields
+            if (!title || !genre || !releaseYear || !rating) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            const newMovie = {
+                title,
+                genre,
+                releaseYear,
+                rating,
+                available: true,
+            };
+
+            // Send the movie data to a server-side script (PHP) to add it to XML
+            fetch('add_movie.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newMovie),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Movie added successfully!');
+                    loadMovies(); // Reload movies to show the new entry
+                } else {
+                    alert('Error adding movie: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Call the function to load movies when the page loads
+        window.onload = loadMovies;
+
+        // Set up the search input event listener
+        document.getElementById('search-input').addEventListener('input', filterMovies);
+
+        // Set up the add movie button event listener
+        document.getElementById('add-movie-btn').addEventListener('click', addMovie);
+    </script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Cards</title>
+    <style>
+        /* Center the movie-cards section */
+        .movie-cards {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            margin-top: 50px;
+        }
+
+        /* Style each movie card */
+        .movie-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 200px;
+            text-align: center;
+            padding: 15px;
+        }
+
+        /* Add hover effect */
+        .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Style the movie images */
+        .movie-card img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        /* Style the movie titles */
+        .movie-card h3 {
+            font-size: 1.2em;
+            margin-top: 10px;
+            color: #333;
+        }
+
+        /* Make sure the page background looks nice */
+        body {
+            background-color: #f4f4f9;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Movie Cards -->
+    <div class="movie-cards">
+        <div class="movie-card">
+            <img src="m1.jpeg" alt="Movie 1">
+            <h3>DADA</h3>
+        </div>
+        <div class="movie-card">
+            <img src="m22.jpeg" alt="Movie 2">
+            <h3>Good Night</h3>
+        </div>
+        <div class="movie-card">
+            <img src="m3.jpeg" alt="Movie 3">
+            <h3>Oh My Kadavule</h3>
+        </div>
+        <div class="movie-card">
+            <img src="m6.jpg" alt="Movie 2">
+            <h3>TYG2</h3>
+        </div>
+        <div class="movie-card">
+            <img src="m5.jpg" alt="Movie 2">
+            <h3>MUMMY</h3>
+        </div>
+    </div>
+
+</body>
+</html>

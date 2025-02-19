@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent Movie</title>
+    <style>
+        body {
+            background-color: #f0f4f8;
+            font-family: 'Verdana', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        h2 {
+            margin-top: 20px;
+            color: #2c3e50;
+            font-size: 2.2em;
+        }
+
+        .movie-details {
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            margin: 20px;
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .movie-details h3 {
+            color: #2980b9;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .movie-details p {
+            font-size: 1.1em;
+            color: #34495e;
+            margin: 10px 0;
+        }
+
+        .rent-btn {
+            background-color: #27ae60;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .rent-btn:hover {
+            background-color: #2ecc71;
+        }
+
+        .rent-btn:active {
+            background-color: #1e8449;
+        }
+        
+        @media (max-width: 600px) {
+            .movie-details {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2>Rent Movie</h2>
+    <div class="movie-details" id="movie-details">
+        <!-- Movie details will be displayed here -->
+    </div>
+
+    <script>
+        // Function to get URL parameters
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Function to load movie details based on the title
+        function loadMovieDetails() {
+            const title = getQueryParam('title');
+
+            fetch('movies.xml')
+                .then(response => response.text())
+                .then(data => {
+                    let parser = new DOMParser();
+                    let xmlDoc = parser.parseFromString(data, "application/xml");
+                    let movies = xmlDoc.getElementsByTagName("movie");
+                    let foundMovie = null;
+
+                    // Loop through movies to find the selected one
+                    for (let i = 0; i < movies.length; i++) {
+                        if (movies[i].getElementsByTagName("title")[0].textContent === title) {
+                            foundMovie = {
+                                title: title,
+                                genre: movies[i].getElementsByTagName("genre")[0].textContent,
+                                releaseYear: movies[i].getElementsByTagName("releaseYear")[0].textContent,
+                                rating: movies[i].getElementsByTagName("rating")[0].textContent,
+                                available: movies[i].getElementsByTagName("available")[0].textContent,
+                            };
+                            break;
+                        }
+                    }
+
+                    // Display movie details
+                    if (foundMovie) {
+                        document.getElementById('movie-details').innerHTML = `
+                            <h3>${foundMovie.title}</h3>
+                            <p><strong>Genre:</strong> ${foundMovie.genre}</p>
+                            <p><strong>Release Year:</strong> ${foundMovie.releaseYear}</p>
+                            <p><strong>Rating:</strong> ${foundMovie.rating}</p>
+                            <p><strong>Available:</strong> ${foundMovie.available === 'true' ? 'Yes' : 'No'}</p>
+                            <button class="rent-btn" onclick="rentMovie('${title}')">Confirm Rent</button>
+                        `;
+                    } else {
+                        document.getElementById('movie-details').innerHTML = `<p>Movie not found.</p>`;
+                    }
+                })
+                .catch(error => {
+                    console.log("Error loading movie data:", error);
+                });
+        }
+
+        // Function to rent the movie
+        function rentMovie(title) {
+            const renterName = prompt("Please enter your name to rent the movie:");
+            if (renterName) {
+                const rentalDate = new Date().toISOString().split('T')[0];
+
+                // Create the rental XML structure
+                const rentalXML = `
+                    <rental>
+                        <title>${title}</title>
+                        <renter>${renterName}</renter>
+                        <rentalDate>${rentalDate}</rentalDate>
+                        <returnDate></returnDate>
+                    </rental>
+                `;
+
+                // Load current rentals and add the new rental
+                fetch('rentals.xml')
+                    .then(response => response.text())
+                    .then(data => {
+                        let parser = new DOMParser();
+                        let xmlDoc = parser.parseFromString(data, "application/xml");
+                        let rentalsNode = xmlDoc.getElementsByTagName("rentals")[0];
+
+                        // Append new rental to the rentals node
+                        rentalsNode.insertAdjacentHTML('beforeend', rentalXML);
+
+                        // Update the rentals XML file on the server
+                        const updatedXML = new XMLSerializer().serializeToString(xmlDoc);
+
+                        fetch('update_rentals.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/xml',
+                            },
+                            body: updatedXML,
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok.');
+                            }
+                            return response.text();
+                        })
+                        .then(msg => {
+                            alert('Movie rented successfully!');
+                            // Redirect to the rental history page after successful rental
+                            window.location.href = 'rental-history.html'; // Redirect to the rental history page
+                        })
+                        .catch(error => {
+                            alert('Error renting movie: ' + error);
+                        });
+                    })
+                    .catch(error => {
+                        console.log("Error loading rentals data:", error);
+                    });
+            }
+        }
+
+        // Call the function to load movie details when the page loads
+        window.onload = loadMovieDetails;
+    </script>
+</body>
+</html>
